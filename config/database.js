@@ -4,6 +4,14 @@ const fs = require('fs');
 const config = require('./env');
 
 const DB_PATH = config.DB_PATH;
+
+// Ensure data directory exists BEFORE creating database connection
+const dataDir = path.dirname(DB_PATH);
+if (!fs.existsSync(dataDir)) {
+  fs.mkdirSync(dataDir, { recursive: true });
+  console.log('Created data directory:', dataDir);
+}
+
 const db = new sqlite3.Database(DB_PATH, (err) => {
   if (err) console.error('Database connection error:', err);
   else console.log('Connected to SQLite database');
@@ -12,11 +20,7 @@ const db = new sqlite3.Database(DB_PATH, (err) => {
 db.configure('busyTimeout', 10000);
 
 const initialize = () => {
-  // Ensure data directory exists
-  const dataDir = path.dirname(DB_PATH);
-  if (!fs.existsSync(dataDir)) {
-    fs.mkdirSync(dataDir, { recursive: true });
-  }
+  // Data directory already created above
 
   // Create tables
   db.serialize(() => {
