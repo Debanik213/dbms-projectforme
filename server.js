@@ -15,6 +15,29 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Initialize database
 db.initialize();
 
+// Health check and root endpoints
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'ok', 
+    database: 'connected',
+    timestamp: new Date().toISOString() 
+  });
+});
+
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Hostel Management API', 
+    status: 'running',
+    version: '1.0.0',
+    endpoints: {
+      health: '/health',
+      seed: '/api/seed/seed-now',
+      auth: '/api/auth/*',
+      docs: 'See README.md'
+    }
+  });
+});
+
 // Routes
 app.use('/api/seed', require('./routes/seed'));
 app.use('/api/auth', require('./routes/auth'));
